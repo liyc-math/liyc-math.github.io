@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="YangchengLi — mathematical research and preprints in algebraic coding theory, combinatorics, finite fields and algebra.">
+<title>YangchengLi | Mathematical Research</title>
+<style>
+:root {
+  color-scheme: light;
+  --navy: #59323e;
+  --ink: #32272d;
+  --muted: #6b5b61;
+  --accent: #8b4d5c;
+  --line: #e8e0dd;
+  --serif: Georgia, 'Times New Roman', serif;
+  --sans: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 28px; }
+body { margin: 0; background: #fcfaf7; color: var(--ink); font: 17px/1.7 var(--serif); }
+a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 4px; }
+a:hover { color: var(--navy); }
+a:focus-visible { outline: 2px solid #b77a88; outline-offset: 5px; }
+.wrap { width: min(calc(100% - 112px), 1140px); margin: 0 auto; }
+.top { background: #fcfaf7; }
+.top .wrap { display: flex; align-items: center; justify-content: flex-end; min-height: 76px; gap: 24px; }
+
+nav { display: flex; align-items: center; flex-wrap: wrap; gap: 12px 32px; }
+nav a { font: 500 14px/1.5 var(--sans); color: var(--muted); text-decoration: none; }
+nav a:hover { text-decoration: underline; }
+.hero { background: var(--navy); color: #fffaf5; padding: 100px 0 98px; }
+.kicker { margin: 0 0 22px; font: 600 11px/1.5 var(--sans); text-transform: uppercase; letter-spacing: .22em; color: #e5cbd0; }
+h1 { font: 400 clamp(43px, 5.8vw, 78px)/1.13 var(--serif); margin: 0 0 25px; letter-spacing: -.04em; }
+.hero .intro { margin: 0; color: #f1e3e4; font-size: 21px; max-width: 850px; line-height: 1.6; }
+.hero .links { display: flex; flex-wrap: wrap; align-items: center; gap: 14px 30px; margin-top: 36px; }
+.hero .links a { font: 500 14px/1.5 var(--sans); color: #f4e5e8; text-decoration: none; }
+.hero .links a:first-child { background: #fcfaf7; padding: 11px 19px; border: 1px solid #fcfaf7; border-radius: 3px; color: var(--navy); }
+.hero .links a:hover { text-decoration: underline; }
+.layout { display: grid; grid-template-columns: minmax(0,1fr) 206px; gap: 85px; padding-top: 67px; padding-bottom: 80px; }
+main { min-width: 0; }
+.section { padding-bottom: 38px; margin-bottom: 39px; border-bottom: 1px solid var(--line); }
+.section:last-child { border-bottom: 0; margin-bottom: 0; padding-bottom: 0; }
+h2 { font: 400 33px/1.24 var(--serif); letter-spacing: -.025em; color: var(--navy); margin: 0 0 17px; }
+h3 { font: 600 21px/1.35 var(--serif); margin: 0 0 8px; }
+.section p { margin: 0 0 10px; color: var(--muted); }
+.section .empty { margin: 20px 0 0; color: #817078; font: italic 16px/1.6 var(--serif); }
+.paper { margin-top: 26px; padding-top: 22px; border-top: 1px solid var(--line); }
+.paper .metadata { font: 13px/1.6 var(--sans); color: var(--muted); }
+details { margin: 12px 0; }
+summary { cursor: pointer; color: var(--accent); }
+.side { align-self: start; border-left: 1px solid var(--line); padding: 3px 0 0 23px; font: 14px/1.75 var(--sans); color: var(--muted); }
+.side h2 { font: 600 13px/1.5 var(--sans); color: var(--navy); letter-spacing: .025em; margin: 0 0 11px; }
+.side p { margin: 0; }
+.side .side-group + .side-group { margin-top: 30px; }
+.side a { display: inline-block; overflow-wrap: anywhere; }
+footer { border-top: 1px solid var(--line); padding: 25px 0 29px; font: 12px/1.6 var(--sans); color: var(--muted); }
+footer .wrap { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+@media (max-width: 850px) {
+  .wrap { width: calc(100% - 56px); }
+  .layout { gap: 38px; grid-template-columns: minmax(0,1fr) 190px; }
+  .hero { padding: 74px 0; }
+  nav { gap: 12px 20px; }
+}
+@media (max-width: 620px) {
+  .wrap { width: calc(100% - 40px); }
+  .top .wrap { align-items: center; justify-content: flex-start; min-height: 0; padding: 22px 0; }
+  nav { gap: 8px 20px; }
+
+  .hero { padding: 60px 0; }
+  h1 { font-size: clamp(38px, 9.5vw, 54px); }
+  .hero .intro { font-size: 19px; }
+  .layout { grid-template-columns: 1fr; gap: 40px; padding-top: 46px; padding-bottom: 48px; }
+  .section { padding-bottom: 28px; margin-bottom: 32px; }
+  h2 { font-size: 29px; }
+  .side { border-left: 0; border-top: 1px solid var(--line); padding: 28px 0 0; }
+}
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <nav aria-label="Main navigation">
+      <a href="#preprints">Preprints</a>
+      <a href="#problems">Open Problems</a>
+      <a href="#resources">Resources</a>
+    </nav>
+  </div>
+</header>
+<section class="hero" aria-labelledby="site-title">
+  <div class="wrap">
+    <p class="kicker">Academic Website &middot; Research Archive</p>
+    <h1 id="site-title">Mathematical Research</h1>
+    <p class="intro">Algebraic coding theory, combinatorics, finite fields and algebraic structures.</p>
+    <div class="links">
+      <a href="#preprints">Browse preprints <span aria-hidden="true">&rarr;</span></a>
+      <a href="https://github.com/liyc-math">GitHub profile <span aria-hidden="true">&#8599;</span></a>
+    </div>
+  </div>
+</section>
+<div class="wrap layout">
+  <main>
+    <section class="section" id="preprints">
+      <h2>Preprints</h2>
+      <p>Research manuscripts, abstracts, PDF files and version histories.</p>
+      <p class="empty">No preprints are listed yet.</p>
+      <!-- Replace the empty notice above with actual papers. Example:
+      <article class="paper">
+        <h3>Full title of the manuscript</h3>
+        <p>Full author names in manuscript order</p>
+        <p class="metadata">First public release: YYYY-MM-DD · Version 1.0</p>
+        <details><summary>Abstract</summary><p>Insert the actual abstract here.</p></details>
+        <p><a href="papers/paper-001-v1.pdf">PDF (v1.0)</a></p>
+      </article>
+      -->
+    </section>
+    <section class="section" id="problems">
+      <h2>Open Problems</h2>
+      <p>Research questions and conjectures.</p>
+    </section>
+    <section class="section" id="resources">
+      <h2>Computational Resources</h2>
+      <p>Verification programs, algorithms and research data.</p>
+    </section>
+  </main>
+  <aside class="side" aria-label="About this website">
+    <div class="side-group">
+      <h2>About</h2>
+      <p>An independent archive for mathematical research.</p>
+    </div>
+    <div class="side-group">
+      <h2>Links</h2>
+      <p><a href="https://github.com/liyc-math">GitHub profile</a><br><a href="https://github.com/liyc-math/liyc-math.github.io">Website repository</a></p>
+    </div>
+    <div class="side-group">
+      <h2>Preprint status</h2>
+      <p>Preprints have not necessarily undergone peer review.</p>
+    </div>
+  </aside>
+</div>
+<footer>
+  <div class="wrap">
+    <span>YangchengLi &middot; Mathematical Research</span>
+    <span>Hosted on GitHub Pages</span>
+  </div>
+</footer>
+</body>
+</html>
