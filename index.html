@@ -37,7 +37,7 @@ h1 { font: 400 clamp(43px, 5.8vw, 78px)/1.13 var(--serif); margin: 0 0 25px; let
 .hero .links a { font: 500 14px/1.5 var(--sans); color: #f4e5e8; text-decoration: none; }
 .hero .links a:first-child { background: #fcfaf7; padding: 11px 19px; border: 1px solid #fcfaf7; border-radius: 3px; color: var(--navy); }
 .hero .links a:hover { text-decoration: underline; }
-.layout { display: grid; grid-template-columns: minmax(0,1fr) 206px; gap: 85px; padding-top: 67px; padding-bottom: 80px; }
+.layout { display: grid; grid-template-columns: minmax(0,1fr) 246px; gap: 67px; padding-top: 67px; padding-bottom: 80px; }
 main { min-width: 0; }
 .section { padding-bottom: 38px; margin-bottom: 39px; border-bottom: 1px solid var(--line); }
 .section:last-child { border-bottom: 0; margin-bottom: 0; padding-bottom: 0; }
@@ -47,13 +47,26 @@ h3 { font: 600 21px/1.35 var(--serif); margin: 0 0 8px; }
 .section .empty { margin: 20px 0 0; color: #817078; font: italic 16px/1.6 var(--serif); }
 .paper { margin-top: 26px; padding-top: 22px; border-top: 1px solid var(--line); }
 .paper .metadata { font: 13px/1.6 var(--sans); color: var(--muted); }
+.paper-title { color: var(--navy); text-decoration: none; }
+.paper-title:hover { text-decoration: underline; }
+.paper .authors { font-size: 16px; }
+.paper .paper-links { display: flex; flex-wrap: wrap; align-items: center; gap: 5px 12px; font: 14px/1.6 var(--sans); margin: 14px 0; }
+.paper .abstract { margin: 12px 0; font-size: 16px; line-height: 1.7; }
+.paper .keywords { font-size: 14px; }
 details { margin: 12px 0; }
+.paper .abstract { white-space: pre-wrap; overflow-wrap: anywhere; }
+.paper .paper-links { gap: 6px 20px; }
+.paper .citation, .versions { font-size: 15px; overflow-wrap: anywhere; }
+.versions { padding-left: 20px; color: var(--muted); }
+.bibtex { background: #f3eeeb; padding: 15px; font: 12px/1.6 ui-monospace, monospace; white-space: pre-wrap; overflow-wrap: anywhere; border: 1px solid var(--line); }
 summary { cursor: pointer; color: var(--accent); }
 .side { align-self: start; border-left: 1px solid var(--line); padding: 3px 0 0 23px; font: 14px/1.75 var(--sans); color: var(--muted); }
 .side h2 { font: 600 13px/1.5 var(--sans); color: var(--navy); letter-spacing: .025em; margin: 0 0 11px; }
 .side p { margin: 0; }
 .side .profile-name { font: 600 15px/1.45 var(--serif); letter-spacing: 0; margin: 0 0 9px; }
 .side .affiliation { font-size: 12px; line-height: 1.7; }
+.side .affiliation span { display: block; }
+@media (min-width: 621px) { .side .affiliation span { white-space: nowrap; } }
 .side .email { margin-top: 10px; font-size: 12px; line-height: 1.6; }
 .side .side-group + .side-group { margin-top: 30px; }
 .side a { display: inline-block; overflow-wrap: anywhere; }
@@ -61,7 +74,7 @@ footer { border-top: 1px solid var(--line); padding: 25px 0 29px; font: 12px/1.6
 footer .wrap { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
 @media (max-width: 850px) {
   .wrap { width: calc(100% - 56px); }
-  .layout { gap: 38px; grid-template-columns: minmax(0,1fr) 190px; }
+  .layout { gap: 38px; grid-template-columns: minmax(0,1fr) 246px; }
   .hero { padding: 74px 0; }
   nav { gap: 12px 20px; }
 }
@@ -107,16 +120,10 @@ footer .wrap { display: flex; align-items: center; justify-content: space-betwee
     <section class="section" id="preprints">
       <h2>Preprints</h2>
       <p>Research manuscripts, abstracts, PDF files and version histories.</p>
-      <p class="empty">No preprints are listed yet.</p>
-      <!-- Replace the empty notice above with actual papers. Example:
-      <article class="paper">
-        <h3>Full title of the manuscript</h3>
-        <p>Full author names in manuscript order</p>
-        <p class="metadata">First public release: YYYY-MM-DD · Version 1.0</p>
-        <details><summary>Abstract</summary><p>Insert the actual abstract here.</p></details>
-        <p><a href="papers/paper-001-v1.pdf">PDF (v1.0)</a></p>
-      </article>
-      -->
+      <div id="preprint-list" aria-live="polite">
+        <p class="empty" id="preprint-status">No preprints are listed yet.</p>
+      </div>
+      <noscript><p class="empty">Enable JavaScript to view the current preprint list.</p></noscript>
     </section>
     <section class="section" id="problems">
       <h2>Open Problems</h2>
@@ -130,7 +137,7 @@ footer .wrap { display: flex; align-items: center; justify-content: space-betwee
   <aside class="side" aria-label="Author information and links">
     <div class="side-group">
       <h2 class="profile-name">Yangcheng Li</h2>
-      <p class="affiliation">School of Mathematical Sciences<br>South China Normal University<br>China</p>
+      <p class="affiliation"><span>School of Mathematical Sciences</span><span>South China Normal University</span><span>China</span></p>
       <p class="email"><a href="mailto:liyc@m.scnu.edu.cn">liyc@m.scnu.edu.cn</a></p>
     </div>
     <div class="side-group">
@@ -149,5 +156,90 @@ footer .wrap { display: flex; align-items: center; justify-content: space-betwee
     <span>Hosted on GitHub Pages</span>
   </div>
 </footer>
+<script>
+(() => {
+  'use strict';
+  const list = document.getElementById('preprint-list');
+  const status = document.getElementById('preprint-status');
+  const home = 'https://liyc-math.github.io/';
+  const dateFmt = new Intl.DateTimeFormat('en-GB', {day:'2-digit',month:'long',year:'numeric',timeZone:'UTC'});
+  const formatDate = d => dateFmt.format(new Date(d+'T00:00:00Z'));
+  function el(tag, text, cls) {
+    const n = document.createElement(tag);
+    if (text !== undefined) n.textContent = text;
+    if (cls) n.className = cls;
+    return n;
+  }
+  function link(url, text, download=false, cls) {
+    const a = el('a',text,cls); a.href = url;
+    if (download) a.download = '';
+    return a;
+  }
+  function detail(name, children) {
+    const d = el('details'); d.append(el('summary',name), ...children); return d;
+  }
+  function validate(r) {
+    return r && typeof r.paper_id==='string' && /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(r.paper_id)
+      && Number.isInteger(r.version_number) && r.version_number>0 && r.version_number<=9999
+      && typeof r.release_date==='string' && /^\d{4}-\d{2}-\d{2}$/.test(r.release_date)
+      && !Number.isNaN(Date.parse(r.release_date)) && typeof r.title==='string'
+      && typeof r.authors==='string' && typeof r.abstract==='string';
+  }
+  const path = (r,ext) => `papers/${r.paper_id}/v${r.version_number}/paper.${ext}`;
+  const bibEscape = s => String(s||'').replace(/[\\{}%&#_$]/g, ch => '\\'+ch).replace(/\s+/g,' ').trim();
+  function render(records) {
+    if (!Array.isArray(records) || !records.every(validate)) throw new Error('Invalid paper catalog');
+    if (!records.length) { status.textContent = 'No preprints are listed yet.'; return; }
+    const groups = new Map();
+    for (const r of records) {
+      if (!groups.has(r.paper_id)) groups.set(r.paper_id,[]);
+      groups.get(r.paper_id).push(r);
+    }
+    const ordered = Array.from(groups.values(), g => g.sort((a,b)=>b.version_number-a.version_number))
+      .sort((a,b)=>b[0].release_date.localeCompare(a[0].release_date)||a[0].paper_id.localeCompare(b[0].paper_id));
+    const fragment = document.createDocumentFragment();
+    for (const versions of ordered) {
+      const latest = versions[0], earliest = versions[versions.length-1];
+      const article = el('article',undefined,'paper'); article.id = latest.paper_id;
+      const dateLine = `First posted: ${formatDate(earliest.release_date)} · Version ${latest.version_number}`
+        +(versions.length>1?` · Updated: ${formatDate(latest.release_date)}`:'');
+      article.append(el('p',dateLine,'metadata'));
+      const title = el('h3');
+      if(latest.pdf) title.append(link(path(latest,'pdf'),latest.title,false,'paper-title'));
+      else title.textContent=latest.title;
+      article.append(title, el('p',latest.authors,'authors'));
+      const links = el('p',undefined,'paper-links');
+      if(latest.pdf) links.append(link(path(latest,'pdf'),'Read PDF'),link(path(latest,'pdf'),'Download PDF',true));
+      if(latest.tex) links.append(link(path(latest,'tex'),'LaTeX source',true));
+      if(!latest.pdf&&!latest.tex) links.append(el('span','Manuscript file not available.'));
+      article.append(links);
+      const abs = [el('p',latest.abstract,'abstract')];
+      if(latest.keywords) {const kw=el('p',undefined,'keywords');kw.append(el('strong','Keywords: '),document.createTextNode(latest.keywords));abs.push(kw);}
+      article.append(detail('Abstract',abs));
+      const url = latest.pdf? home+path(latest,'pdf'): latest.tex? home+path(latest,'tex'): home+'#'+latest.paper_id;
+      const citation=el('p',undefined,'citation');
+      citation.append(document.createTextNode(`${latest.authors}. “${latest.title}.” Preprint, ${latest.release_date.slice(0,4)}, version ${latest.version_number}. `),link(url,url),document.createTextNode('.'));
+      const bib=`@misc{${latest.paper_id}-v${latest.version_number},\n  author = {${bibEscape(latest.bib_authors||latest.authors)}},\n  title = {${bibEscape(latest.title)}},\n  year = {${latest.release_date.slice(0,4)}},\n  note = {Preprint, version ${latest.version_number}},\n  url = {${url}}\n}`;
+      article.append(detail('Citation',[citation,el('pre',bib,'bibtex')]));
+      const ul=el('ul',undefined,'versions');
+      for(const r of versions){const li=el('li',`v${r.version_number} · ${formatDate(r.release_date)}`);if(r.pdf)li.append(document.createTextNode(' · '),link(path(r,'pdf'),'PDF'));if(r.tex)li.append(document.createTextNode(' · '),link(path(r,'tex'),'LaTeX',true));ul.append(li);}
+      article.append(detail(`Version history (${versions.length})`,[ul]));
+      fragment.append(article);
+    }
+    list.replaceChildren(fragment);
+    // Handle direct links to entries loaded after the initial document.
+    if (location.hash) {
+      try { const target=document.getElementById(decodeURIComponent(location.hash.slice(1))); if(target&&list.contains(target)) target.scrollIntoView(); } catch (_) {}
+    }
+  }
+  // A locally opened HTML file is just a preview, not a Jekyll build.
+  if (location.protocol === 'file:') return;
+  status.textContent = 'Loading preprints…';
+  fetch('papers-data.json', {cache:'no-cache'})
+    .then(r=>{if(!r.ok)throw new Error('Catalog unavailable');return r.json();})
+    .then(data=>{if(data.schema!==1)throw new Error('Catalog not built');render(data.papers);})
+    .catch(()=>{status.textContent='The preprint list is temporarily unavailable. Please check again after the site has been deployed.';});
+})();
+</script>
 </body>
 </html>

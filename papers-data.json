@@ -1,0 +1,26 @@
+---
+layout: null
+permalink: /papers-data.json
+---
+{%- assign records = site.pages | where: "paper_record", true -%}
+{ "schema": 1, "papers": [
+{%- for record in records -%}
+  {%- assign base = '/papers/' | append: record.paper_id | append: '/v' | append: record.version_number | append: '/' -%}
+  {%- assign pdf_path = base | append: 'paper.pdf' -%}
+  {%- assign tex_path = base | append: 'paper.tex' -%}
+  {%- assign pdf_file = site.static_files | where: "path", pdf_path | first -%}
+  {%- assign tex_file = site.static_files | where: "path", tex_path | first -%}
+  {
+    "paper_id": {{ record.paper_id | jsonify }},
+    "version_number": {{ record.version_number | jsonify }},
+    "release_date": {{ record.release_date | date: "%Y-%m-%d" | jsonify }},
+    "title": {{ record.title | jsonify }},
+    "authors": {{ record.authors | jsonify }},
+    "bib_authors": {{ record.bib_authors | jsonify }},
+    "abstract": {{ record.abstract | jsonify }},
+    "keywords": {{ record.keywords | jsonify }},
+    "pdf": {% if pdf_file %}true{% else %}false{% endif %},
+    "tex": {% if tex_file %}true{% else %}false{% endif %}
+  }{% unless forloop.last %},{% endunless %}
+{%- endfor -%}
+] }
