@@ -3,7 +3,7 @@ layout: null
 permalink: /papers-data.json
 ---
 {%- assign records = site.pages | where: "paper_record", true -%}
-{ "schema": 1, "papers": [
+{ "schema": 2, "papers": [
 {%- for record in records -%}
   {%- assign base = '/papers/' | append: record.paper_id | append: '/v' | append: record.version_number | append: '/' -%}
   {%- assign pdf_path = base | append: 'paper.pdf' -%}
@@ -19,6 +19,13 @@ permalink: /papers-data.json
     "bib_authors": {{ record.bib_authors | jsonify }},
     "abstract": {{ record.abstract | jsonify }},
     "keywords": {{ record.keywords | jsonify }},
+    "kind": {{ record.kind | default: 'local' | jsonify }},
+    "arxiv_id": {{ record.arxiv_id | jsonify }},
+    "doi": {{ record.doi | jsonify }},
+    "external_url": {{ record.external_url | jsonify }},
+    "journal": {{ record.journal | jsonify }},
+    "publication_date": {{ record.publication_date | jsonify }},
+    "detail": {% if record.layout == 'paper' %}true{% else %}false{% endif %},
     "pdf": {% if pdf_file %}true{% else %}false{% endif %},
     "tex": {% if tex_file %}true{% else %}false{% endif %}
   }{% unless forloop.last %},{% endunless %}

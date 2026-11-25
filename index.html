@@ -4,7 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="description" content="YangchengLi — mathematical research and preprints in algebraic coding theory, combinatorics, finite fields and algebra.">
-<title>YangchengLi | Mathematical Research</title>
+<title>Yangcheng Li | Mathematical Research</title>
+<link rel="canonical" href="https://liyc-math.github.io/">
 <style>
 :root {
   color-scheme: light;
@@ -50,6 +51,8 @@ h3 { font: 600 21px/1.35 var(--serif); margin: 0 0 8px; }
 .paper-title { color: var(--navy); text-decoration: none; }
 .paper-title:hover { text-decoration: underline; }
 .paper .authors { font-size: 16px; }
+.archive-link { font: 12px/1.5 var(--sans); }
+.paper .abstract { overflow-wrap: anywhere; }
 .paper .paper-links { display: flex; flex-wrap: wrap; align-items: center; gap: 5px 12px; font: 14px/1.6 var(--sans); margin: 14px 0; }
 .paper .abstract { margin: 12px 0; font-size: 16px; line-height: 1.7; }
 .paper .keywords { font-size: 14px; }
@@ -98,7 +101,7 @@ footer .wrap { display: flex; align-items: center; justify-content: space-betwee
 <header class="top">
   <div class="wrap">
     <nav aria-label="Main navigation">
-      <a href="#preprints">Preprints</a>
+      <a href="#preprints">Papers</a>
       <a href="#problems">Open Problems</a>
       <a href="#resources">Resources</a>
     </nav>
@@ -110,7 +113,7 @@ footer .wrap { display: flex; align-items: center; justify-content: space-betwee
     <h1 id="site-title">Mathematical Research</h1>
     <p class="intro">Algebraic coding theory, combinatorics, finite fields and algebraic structures.</p>
     <div class="links">
-      <a href="#preprints">Browse preprints <span aria-hidden="true">&rarr;</span></a>
+      <a href="#preprints">Browse papers <span aria-hidden="true">&rarr;</span></a>
       <a href="https://github.com/liyc-math">GitHub profile <span aria-hidden="true">&#8599;</span></a>
     </div>
   </div>
@@ -118,12 +121,13 @@ footer .wrap { display: flex; align-items: center; justify-content: space-betwee
 <div class="wrap layout">
   <main>
     <section class="section" id="preprints">
-      <h2>Preprints</h2>
-      <p>Research manuscripts, abstracts, PDF files and version histories.</p>
+      <h2>Papers</h2>
+      <p>Preprints, published articles and research manuscripts.</p>
+      <p class="archive-link"><a href="papers.html">Complete paper index</a></p>
       <div id="preprint-list" aria-live="polite">
-        <p class="empty" id="preprint-status">No preprints are listed yet.</p>
+        <p class="empty" id="preprint-status">No papers are listed yet.</p>
       </div>
-      <noscript><p class="empty">Enable JavaScript to view the current preprint list.</p></noscript>
+      <noscript><p class="empty">View the <a href="papers.html">complete paper index</a>.</p></noscript>
     </section>
     <section class="section" id="problems">
       <h2>Open Problems</h2>
@@ -158,87 +162,34 @@ footer .wrap { display: flex; align-items: center; justify-content: space-betwee
 </footer>
 <script>
 (() => {
-  'use strict';
-  const list = document.getElementById('preprint-list');
-  const status = document.getElementById('preprint-status');
-  const home = 'https://liyc-math.github.io/';
-  const dateFmt = new Intl.DateTimeFormat('en-GB', {day:'2-digit',month:'long',year:'numeric',timeZone:'UTC'});
-  const formatDate = d => dateFmt.format(new Date(d+'T00:00:00Z'));
-  function el(tag, text, cls) {
-    const n = document.createElement(tag);
-    if (text !== undefined) n.textContent = text;
-    if (cls) n.className = cls;
-    return n;
-  }
-  function link(url, text, download=false, cls) {
-    const a = el('a',text,cls); a.href = url;
-    if (download) a.download = '';
-    return a;
-  }
-  function detail(name, children) {
-    const d = el('details'); d.append(el('summary',name), ...children); return d;
-  }
-  function validate(r) {
-    return r && typeof r.paper_id==='string' && /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(r.paper_id)
-      && Number.isInteger(r.version_number) && r.version_number>0 && r.version_number<=9999
-      && typeof r.release_date==='string' && /^\d{4}-\d{2}-\d{2}$/.test(r.release_date)
-      && !Number.isNaN(Date.parse(r.release_date)) && typeof r.title==='string'
-      && typeof r.authors==='string' && typeof r.abstract==='string';
-  }
-  const path = (r,ext) => `papers/${r.paper_id}/v${r.version_number}/paper.${ext}`;
-  const bibEscape = s => String(s||'').replace(/[\\{}%&#_$]/g, ch => '\\'+ch).replace(/\s+/g,' ').trim();
-  function render(records) {
-    if (!Array.isArray(records) || !records.every(validate)) throw new Error('Invalid paper catalog');
-    if (!records.length) { status.textContent = 'No preprints are listed yet.'; return; }
-    const groups = new Map();
-    for (const r of records) {
-      if (!groups.has(r.paper_id)) groups.set(r.paper_id,[]);
-      groups.get(r.paper_id).push(r);
-    }
-    const ordered = Array.from(groups.values(), g => g.sort((a,b)=>b.version_number-a.version_number))
-      .sort((a,b)=>b[0].release_date.localeCompare(a[0].release_date)||a[0].paper_id.localeCompare(b[0].paper_id));
-    const fragment = document.createDocumentFragment();
-    for (const versions of ordered) {
-      const latest = versions[0], earliest = versions[versions.length-1];
-      const article = el('article',undefined,'paper'); article.id = latest.paper_id;
-      const dateLine = `First posted: ${formatDate(earliest.release_date)} · Version ${latest.version_number}`
-        +(versions.length>1?` · Updated: ${formatDate(latest.release_date)}`:'');
-      article.append(el('p',dateLine,'metadata'));
-      const title = el('h3');
-      if(latest.pdf) title.append(link(path(latest,'pdf'),latest.title,false,'paper-title'));
-      else title.textContent=latest.title;
-      article.append(title, el('p',latest.authors,'authors'));
-      const links = el('p',undefined,'paper-links');
-      if(latest.pdf) links.append(link(path(latest,'pdf'),'Read PDF'),link(path(latest,'pdf'),'Download PDF',true));
-      if(latest.tex) links.append(link(path(latest,'tex'),'LaTeX source',true));
-      if(!latest.pdf&&!latest.tex) links.append(el('span','Manuscript file not available.'));
-      article.append(links);
-      const abs = [el('p',latest.abstract,'abstract')];
-      if(latest.keywords) {const kw=el('p',undefined,'keywords');kw.append(el('strong','Keywords: '),document.createTextNode(latest.keywords));abs.push(kw);}
-      article.append(detail('Abstract',abs));
-      const url = latest.pdf? home+path(latest,'pdf'): latest.tex? home+path(latest,'tex'): home+'#'+latest.paper_id;
-      const citation=el('p',undefined,'citation');
-      citation.append(document.createTextNode(`${latest.authors}. “${latest.title}.” Preprint, ${latest.release_date.slice(0,4)}, version ${latest.version_number}. `),link(url,url),document.createTextNode('.'));
-      const bib=`@misc{${latest.paper_id}-v${latest.version_number},\n  author = {${bibEscape(latest.bib_authors||latest.authors)}},\n  title = {${bibEscape(latest.title)}},\n  year = {${latest.release_date.slice(0,4)}},\n  note = {Preprint, version ${latest.version_number}},\n  url = {${url}}\n}`;
-      article.append(detail('Citation',[citation,el('pre',bib,'bibtex')]));
-      const ul=el('ul',undefined,'versions');
-      for(const r of versions){const li=el('li',`v${r.version_number} · ${formatDate(r.release_date)}`);if(r.pdf)li.append(document.createTextNode(' · '),link(path(r,'pdf'),'PDF'));if(r.tex)li.append(document.createTextNode(' · '),link(path(r,'tex'),'LaTeX',true));ul.append(li);}
-      article.append(detail(`Version history (${versions.length})`,[ul]));
-      fragment.append(article);
-    }
-    list.replaceChildren(fragment);
-    // Handle direct links to entries loaded after the initial document.
-    if (location.hash) {
-      try { const target=document.getElementById(decodeURIComponent(location.hash.slice(1))); if(target&&list.contains(target)) target.scrollIntoView(); } catch (_) {}
-    }
-  }
-  // A locally opened HTML file is just a preview, not a Jekyll build.
-  if (location.protocol === 'file:') return;
-  status.textContent = 'Loading preprints…';
-  fetch('papers-data.json', {cache:'no-cache'})
-    .then(r=>{if(!r.ok)throw new Error('Catalog unavailable');return r.json();})
-    .then(data=>{if(data.schema!==1)throw new Error('Catalog not built');render(data.papers);})
-    .catch(()=>{status.textContent='The preprint list is temporarily unavailable. Please check again after the site has been deployed.';});
+'use strict';
+const list=document.getElementById('preprint-list'),status=document.getElementById('preprint-status');
+const home='https://liyc-math.github.io/';
+const dateFmt=new Intl.DateTimeFormat('en-GB',{day:'2-digit',month:'long',year:'numeric',timeZone:'UTC'});
+const fmt=d=>{if(!d)return '';if(/^\d{4}-\d{2}-\d{2}$/.test(d)&&!isNaN(Date.parse(d)))return dateFmt.format(new Date(d+'T00:00:00Z'));return d;};
+function el(tag,text,cls){const n=document.createElement(tag);if(text!==undefined)n.textContent=text;if(cls)n.className=cls;return n;}
+function link(url,text,download=false,cls){const a=el('a',text,cls);a.href=url;if(download)a.download='';return a;}
+function detail(name,children){const d=el('details');d.append(el('summary',name),...children);return d;}
+function safeExternal(s){try{const u=new URL(s);return u.protocol==='https:'||u.protocol==='http:'?u.href:'';}catch(_){return '';}}
+function cleanTitle(s){return String(s||'').replace(/Pl(?:\{)?\\"\{?u\}?(?:\})?cker/g,'Plücker');}
+function valid(r){return r&&typeof r.paper_id==='string'&&/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(r.paper_id)&&Number.isInteger(r.version_number)&&r.version_number>0&&r.version_number<=9999&&typeof r.title==='string'&&typeof r.authors==='string'&&typeof r.release_date==='string';}
+const path=(r,ext)=>`papers/${r.paper_id}/v${r.version_number}/paper.${ext}`;
+const articlePath=r=>r.detail?`papers/${r.paper_id}/v${r.version_number}/record.html`:'';
+const arxivId=r=>String(r.arxiv_id||'').match(/^(?:\d{4}\.\d{4,5}|[a-zA-Z][a-zA-Z.\-]*\/\d{7})(?:v[1-9]\d*)?$/)?r.arxiv_id:'';
+const arxivUrl=r=>arxivId(r)?'https://arxiv.org/abs/'+arxivId(r):'';
+const doiUrl=r=>/^10\.\d{4,9}\/\S+$/i.test(r.doi||'')?'https://doi.org/'+encodeURIComponent(r.doi).replace(/%2F/gi,'/'):'';
+const journalUrl=r=>doiUrl(r)||safeExternal(r.external_url);
+const kind=r=>['arxiv','journal'].includes(r.kind)?r.kind:'local';
+const bestUrl=r=>kind(r)==='journal'?(journalUrl(r)||arxivUrl(r)||home+(articlePath(r)||path(r,'pdf'))):kind(r)==='arxiv'?(arxivUrl(r)||home+(articlePath(r)||path(r,'pdf'))):home+(articlePath(r)||(r.pdf?path(r,'pdf'):r.tex?path(r,'tex'):'#'+r.paper_id));
+function sourceLinks(r,full){const a=[];if(r.pdf){a.push(link(path(r,'pdf'),full?'Read PDF':'PDF'));if(full)a.push(link(path(r,'pdf'),'Download PDF',true));}if(r.tex)a.push(link(path(r,'tex'),'LaTeX source',true));if(arxivUrl(r)){a.push(link(arxivUrl(r),'arXiv'));if(full)a.push(link('https://arxiv.org/pdf/'+arxivId(r),'arXiv PDF'));}if(journalUrl(r))a.push(link(journalUrl(r),doiUrl(r)?'DOI / Journal':'Journal'));return a;}
+const bibEscape=s=>String(s||'').replace(/[\\{}%&#_$]/g,ch=>'\\'+ch).replace(/\s+/g,' ').trim();
+function citation(r){const title=cleanTitle(r.title),type=kind(r),year=(type==='local'?r.release_date:r.publication_date||'').slice(0,4),url=bestUrl(r),note=type==='journal'?(r.journal||'Journal article'):type==='arxiv'?'arXiv:'+arxivId(r):'Preprint, version '+r.version_number;
+const p=el('p',undefined,'citation');p.append(document.createTextNode(`${r.authors}. “${title}.” ${note}${year?', '+year:''}. `),link(url,url));
+const fields=[['author',r.bib_authors||r.authors],['title',title]];if(year)fields.push(['year',year]);
+if(type==='journal'&&r.journal)fields.push(['journal',r.journal]);if(type==='arxiv'&&arxivId(r)){fields.push(['eprint',arxivId(r)],['archivePrefix','arXiv']);}if(r.doi)fields.push(['doi',r.doi]);if(type==='local')fields.push(['note',note]);fields.push(['url',url]);
+const bib='@'+(type==='journal'?'article':'misc')+'{'+r.paper_id+'-v'+r.version_number+',\n'+fields.map(([k,v])=>'  '+k+' = {'+bibEscape(v)+'}').join(',\n')+'\n}';return [p,el('pre',bib,'bibtex')];}
+function render(records){if(!Array.isArray(records))throw new Error('Invalid catalog');const good=records.filter(valid);if(!good.length){status.textContent=records.length?'Paper metadata could not be read.':'No papers are listed yet.';return;}const groups=new Map();for(const r of good){if(!groups.has(r.paper_id))groups.set(r.paper_id,[]);groups.get(r.paper_id).push(r);}const ordered=[...groups.values()].map(g=>g.sort((a,b)=>b.version_number-a.version_number)).sort((a,b)=>String(b[0].release_date).localeCompare(String(a[0].release_date))||a[0].paper_id.localeCompare(b[0].paper_id));const fragment=document.createDocumentFragment();for(const versions of ordered){const r=versions[0],first=versions.at(-1),type=kind(r),article=el('article',undefined,'paper');article.id=r.paper_id;let dateLine=type==='local'?`First posted: ${fmt(first.release_date)} · Version ${r.version_number}`:type==='arxiv'?`arXiv: ${arxivId(r)}${r.publication_date?' · '+fmt(r.publication_date):''}`:`Published article${r.publication_date?' · '+fmt(r.publication_date):''}`;if(type==='local'&&versions.length>1)dateLine+=` · Updated: ${fmt(r.release_date)}`;article.append(el('p',dateLine,'metadata'));const title=el('h3'),target=articlePath(r)||(r.pdf?path(r,'pdf'):arxivUrl(r)||journalUrl(r));if(target)title.append(link(target,cleanTitle(r.title),false,'paper-title'));else title.textContent=cleanTitle(r.title);article.append(title,el('p',r.authors,'authors'));if(type==='journal'&&r.journal)article.append(el('p',r.journal,'metadata'));const links=el('p',undefined,'paper-links');if(articlePath(r))links.append(link(articlePath(r),'Paper details'));links.append(...sourceLinks(r,true));if(links.childNodes.length)article.append(links);if(r.abstract||r.keywords){const ab=[];if(r.abstract)ab.push(el('p',r.abstract,'abstract'));if(r.keywords){const kw=el('p',undefined,'keywords');kw.append(el('strong','Keywords: '),document.createTextNode(r.keywords));ab.push(kw);}article.append(detail('Abstract',ab));}article.append(detail('Citation',citation(r)));if(type==='local'||versions.length>1){const ul=el('ul',undefined,'versions');for(const v of versions){const li=el('li',`v${v.version_number} · ${fmt(v.release_date)}`);if(articlePath(v))li.append(document.createTextNode(' · '),link(articlePath(v),'Details'));for(const a of sourceLinks(v,false))li.append(document.createTextNode(' · '),a);ul.append(li);}article.append(detail(`Version history (${versions.length})`,[ul]));}fragment.append(article);}if(good.length!==records.length)fragment.append(el('p','Some invalid records were omitted.','empty'));list.replaceChildren(fragment);if(location.hash){try{const target=document.getElementById(decodeURIComponent(location.hash.slice(1)));if(target&&list.contains(target))target.scrollIntoView();}catch(_){}}}
+if(location.protocol==='file:')return;status.textContent='Loading papers…';fetch('papers-data.json',{cache:'no-cache'}).then(r=>{if(!r.ok)throw Error('Catalog unavailable');return r.json();}).then(d=>{if(![1,2].includes(d.schema))throw Error('Invalid catalog');render(d.papers);}).catch(()=>{status.textContent='The paper list is temporarily unavailable. Please check the ';status.append(link('papers.html','complete paper index'),document.createTextNode('.'));});
 })();
 </script>
 </body>

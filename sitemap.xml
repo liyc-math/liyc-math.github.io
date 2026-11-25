@@ -1,0 +1,10 @@
+---
+layout: null
+permalink: /sitemap.xml
+---
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<url><loc>https://liyc-math.github.io/</loc></url>
+<url><loc>https://liyc-math.github.io/papers.html</loc></url>
+{% assign records = site.pages | where: 'paper_record', true %}{% for r in records %}{% if r.kind != 'journal' and r.kind != 'arxiv' %}{% if r.layout == 'paper' %}<url><loc>https://liyc-math.github.io{{ r.url | xml_escape }}</loc><lastmod>{{ r.release_date | date: '%Y-%m-%d' }}</lastmod></url>{% endif %}{% assign pdf_path = '/papers/' | append: r.paper_id | append: '/v' | append: r.version_number | append: '/paper.pdf' %}{% assign f = site.static_files | where: 'path', pdf_path | first %}{% if f %}<url><loc>https://liyc-math.github.io{{ pdf_path | xml_escape }}</loc></url>{% endif %}{% endif %}{% endfor %}
+</urlset>
